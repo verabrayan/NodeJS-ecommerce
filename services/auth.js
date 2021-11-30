@@ -1,14 +1,23 @@
 const jwt = require("jsonwebtoken")
-const config = require("../config")
-
+const config = require("../config/index")
+const bcrypt = require('bcrypt')
 const Usuarios = require("./usuarios")
 
 class Auth{
     usuarios = new Usuarios()
+
+    async hashPassword(password){
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash(password,salt)
+        return hash
+
+    }
+
     async login(email,password){
         const usuario = await this.usuarios.getUser(email)
         if(usuario){
-            if(password===usuario.password){
+            const passwordMatch = await bcrypt.compare(password,usuario.password)
+            if(passwordMatch){
                 const token = jwt.sign({email,rol:usuario.rol},config.jwt_password,{
                     expiresIn:"1d"
                 })
@@ -18,7 +27,9 @@ class Auth{
 
         return {"message":"Credenciales incorrectas",success:false}
     }
-    async registro(email,password,name){
+
+    async registro(email,password_init,name){
+        let password = await this.hashPassword(password_init)
         const usuario = await this.usuarios.createUsuario({email,password,name})
         
         if(usuario){

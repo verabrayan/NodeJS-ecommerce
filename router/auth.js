@@ -7,7 +7,7 @@ const authService = new Auth()
 
 router.post("/login",async (req,res)=>{
     const {email,password} = req.body
-    console.log(email)
+    //console.log(email)
     const result = await authService.login(email,password)
     //res.status(200).json()
     if(result.success){
