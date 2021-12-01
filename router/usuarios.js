@@ -1,30 +1,28 @@
-const {Router} = require('express');
+const { Router } = require("express");
 const router = Router();
-const usuarios = require('../services/usuarios')
+const usuarios = require("../services/usuarios");
 
-const usuario = new usuarios()
+const usuario = new usuarios();
 
-   
+router.get("/", async (req, res) => {
+  const persona = await usuario.getUsuarios();
+  res.status(200).json(persona);
+});
 
-router.get('/',async(req,res)=>{
-    const persona = await usuario.getUsuarios()
-    res.status(200).json(persona)
-})
-    
- router.post('/',async(req,res)=>{
-    const nuevaPersona= await usuario.createUsuario(req.body)
-    res.status(201).json(nuevaPersona)
-})
+router.post("/", async (req, res) => {
+  const nuevaPersona = await usuario.createUsuario(req.body);
+  res.status(201).json(nuevaPersona);
+});
 
-router.put('/:id',async(req,res)=>{
-    const update = await usuario.updateUsuario(req.params.id,req.body)
-    res.status(200).json(update)
-})
+router.put("/:id", async (req, res) => {
+  const update = await usuario.updateUsuario(req.params.id, req.body);
+  res.status(200).json(update);
+});
 
-router.delete('/:id',async(req,res)=>{
-    await usuario.deletUsuario(req.params.id)
-    res.status(200).json("product delete")
-})
+router.delete("/:id", async (req, res) => {
+  await usuario.deletUsuario(req.params.id);
+  res.status(200).json("product delete");
+});
 
 // router.post('/login',async(req,res)=>{
 //     const {name,password,email}= req.body
@@ -37,4 +35,4 @@ router.delete('/:id',async(req,res)=>{
 //     //return res.status(404).json(result)
 // })
 
-module.exports = router
+module.exports = router;

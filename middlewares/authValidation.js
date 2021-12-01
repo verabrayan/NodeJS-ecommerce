@@ -1,43 +1,49 @@
-const jwt = require('jsonwebtoken')
-const config = require('../config/index')
+const jwt = require("jsonwebtoken");
+const config = require("../config/index");
 
-const obtenerRol = (token,validacion,req,res,next)=>{
-    if(!token){
-        return res.status(403).json({message:"Se necesita un token para acceder"})
+const obtenerRol = (token, validacion, req, res, next) => {
+  if (!token) {
+    return res
+      .status(403)
+      .json({ message: "Se necesita un token para acceder" });
+  }
+
+  try {
+    const decodedToken = jwt.verify(token, config.jwt_password);
+    const { rol } = decodedToken;
+
+    if (validacion === "regular") {
+      req.Usuario = decodedToken;
+      return next();
+    } else if (
+      validacion === "editor" &&
+      (rol === "admin" || rol === "editor")
+    ) {
+      req.Usuario = decodedToken;
+      return next();
+    } else if (validacion === "admin" && rol === "admin") {
+      req.Usuario = decodedToken;
+      return next();
     }
+  } catch (error) {
+    return res.status(401).json({ message: "Token invalido" });
+  }
+  return res
+    .status(403)
+    .json({ message: "No cuentas con permisos necesarios" });
+};
 
-    try{
-        const decodedToken = jwt.verify(token,config.jwt_password)
-        const {rol} = decodedToken
+const verifyToken = (req, res, next) => {
+  const { token } = req.cookies;
+  return obtenerRol(token, "regular", req, res, next);
+};
+const verifyTokenEditor = (req, res, next) => {
+  const { token } = req.cookies;
+  return obtenerRol(token, "editor", req, res, next);
+};
+const verifyTokenAdmin = (req, res, next) => {
+  const { token } = req.cookies;
+  return obtenerRol(token, "admin", req, res, next);
+};
 
-        if(validacion==="regular"){
-            req.Usuario = decodedToken
-            return next()
-        }else if(validacion ==="editor" && (rol==="admin" || rol ==="editor")){
-            req.Usuario = decodedToken
-            return next()
-        }else if(validacion==="admin" && rol==="admin"){
-            req.Usuario = decodedToken
-            return next()
-        }
-    }catch(error){
-        return res.status(401).json({message:"Token invalido"})
-    }
-    return res.status(403).json({message:"No cuentas con permisos necesarios"})
-}
-
-const verifyToken = (req,res,next)=>{
-    const {token} = req.cookies
-    return obtenerRol(token,"regular",req,res,next)
-}
-const verifyTokenEditor = (req,res,next)=>{
-    const {token} = req.cookies
-    return obtenerRol(token,"editor",req,res,next) 
-}
-const verifyTokenAdmin = (req,res,next)=>{
-    const {token} = req.cookies
-    return obtenerRol(token,"admin",req,res,next) 
-}
-    
-module.exports = {verifyToken,verifyTokenEditor,verifyTokenAdmin}
-
+module.exports = { verifyToken, verifyTokenEditor, verifyTokenAdmin };
