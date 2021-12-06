@@ -18,7 +18,7 @@ class Auth {
       const passwordMatch = await bcrypt.compare(password, usuario.password);
       if (passwordMatch) {
         const token = jwt.sign(
-          { email, rol: usuario.rol },
+          { email, rol: usuario.rol, id: usuario.id },
           config.jwt_password,
           {
             expiresIn: "1h",
@@ -32,20 +32,16 @@ class Auth {
   }
 
   async registro(email, password_init, name) {
-    const emailUser = await this.usuarios.getUser(email)
-    if (emailUser){
-      return { message: "El usuario ya existe"}
-    }else{
-      let password = await this.hashPassword(password_init);
-      const usuario = await this.usuarios.createUsuario({email,password,name});
-  
-      if (usuario) {
-        return { message: "Registro exitoso", success: true, usuario };
-      }
-    }
+    const validacion = await this.usuarios.validateUser({email,password:password_init,name})
+    if(validacion.success){
+      const password = await this.hashPassword(password_init)
+      const usuario = await this.usuarios.createUsuario({...validacion.data,password})
 
-    return { message: "Credenciales incorrectas", success: false };
+      return usuario
+    }
+    return {success:false,...validacion}
   }
+
 
   async cambiarRol(id, rol) {
     const usuario = await this.usuarios.updateUsuario(id, { rol });

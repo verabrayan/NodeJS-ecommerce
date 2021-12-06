@@ -9,14 +9,15 @@ const {
 
 const producto = new productos();
 
-router.get("/", verifyTokenAdmin, async (req, res) => {
-  const products = await producto.getProducts();
+router.get("/", verifyTokenEditor, async (req, res) => {
+  const products = await producto.getProducts(req.Usuario.id);
   res.status(200).json(products);
 });
 
 router.post("/", verifyTokenEditor, async (req, res) => {
-  const newProduct = await producto.createProduct(req.body);
-  res.status(201).json(newProduct);
+  const newProduct = await producto.createProduct({...req.body,userId:req.Usuario.id});
+  res.status(newProduct.success?201:400).json(newProduct);
+
 });
 
 router.put("/:id", verifyTokenEditor, async (req, res) => {

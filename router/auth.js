@@ -23,11 +23,7 @@ router.post("/signup", async (req, res) => {
   const { email, name, password } = req.body;
   const result = await authService.registro(email, password, name);
   //res.status(200).json()
-  if (result.success) {
-    return res.status(201).json({ name: result.usuario.name });
-  }
-
-  return res.status(400).json(result);
+  return res.status(result.success?201:400).json(result)
 });
 
 router.put("/cambiar_rol/:id", verifyTokenAdmin, async (req, res) => {
