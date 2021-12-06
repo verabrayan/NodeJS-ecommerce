@@ -32,6 +32,13 @@ class productos {
   //   }
 
   // }
+  async validateId(idLogin,idItem){
+    const item = await productoModel.findById(idItem)
+    if (idLogin === item.userId){
+      return true
+    }
+    return false
+  }
 
   async updateProduct(id, data) {
     const product = await productoModel.findByIdAndUpdate(id, data);

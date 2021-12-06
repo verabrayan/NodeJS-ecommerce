@@ -21,13 +21,22 @@ router.post("/", verifyTokenEditor, async (req, res) => {
 });
 
 router.put("/:id", verifyTokenEditor, async (req, res) => {
-  const update = await producto.updateProduct(req.params.id, req.body);
-  res.status(200).json(update);
+  const flag = await producto.validateId(req.Usuario.id,req.params.id)
+  if (flag){
+    const update = await producto.updateProduct(req.params.id,req.body);
+    return res.status(200).json(update);
+  }
+  return res.status(400).json({message:'No tiene permitido modificar este producto'});
+
 });
 
 router.delete("/:id", verifyTokenEditor, async (req, res) => {
-  await producto.deletProduct(req.params.id);
-  res.status(200).json("product delete");
+  const flag = await producto.validateId(req.Usuario.id,req.params.id)
+  if (flag){ 
+    await producto.deletProduct(req.params.id);
+    return res.status(200).json("product delete");
+  }
+  return res.status(400).json({message:'No tiene permitido eliminar este producto'});
 });
 
 module.exports = router;
