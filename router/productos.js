@@ -9,8 +9,13 @@ const {
 
 const producto = new productos();
 
-router.get("/", verifyTokenEditor, async (req, res) => {
-  const products = await producto.getProducts(req.Usuario.id);
+router.get("/my_products", verifyTokenEditor, async (req, res) => {
+  const products = await producto.getMyProducts(req.Usuario.id);
+  res.status(200).json(products);
+});
+
+router.get("/", async (req, res) => {
+  const products = await producto.getProducts();
   res.status(200).json(products);
 });
 

@@ -15,6 +15,14 @@ class usuarios {
     return usuarios;
   }
 
+  async validateId(idLogin,idItem){
+    const item = await UsuarioModel.findById(idItem)
+    if (idLogin === item.userId){
+      return true
+    }
+    return false
+  }
+
   async validateUser(data){
     const validacion = usuarioSchemaJoi.validate(data)
     //console.log(validacion.error)

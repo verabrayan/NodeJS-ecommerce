@@ -5,6 +5,10 @@ const { verifyTokenAdmin } = require("../middlewares/authValidation");
 const Auth = require("../services/auth");
 const authService = new Auth();
 
+router.get("/google",authService.authGoogle())
+
+router.get('/google/callback',authService.authGoogleCallback())
+
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   //console.log(email)

@@ -7,6 +7,8 @@ const config = {
   db_name: process.env.DB_NAME,
   db_user: process.env.DB_USER,
   jwt_password: process.env.JWT_PASSWORD,
+  google_client_id: process.env.GOOGLE_CLIENT_ID,
+  google_client_secret: process.env.GOOGLE_CLIENT_SECRET
 };
 
 module.exports = config;

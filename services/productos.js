@@ -2,14 +2,18 @@ const {productoModel,productosSchemaJoi} = require("../schemas/productos");
 //const products = new productoModel()
 
 class productos {
-  async getProducts(id) {
+  async getMyProducts(id) {
     const productos = await productoModel.find({userId:id});
+    return productos || [];
+  }
+  async getProducts(id) {
+    const productos = await productoModel.find();
     return productos || [];
   }
 
   async createProduct(data) {
     const validacion = productosSchemaJoi.validate(data)
-    console.log(validacion.error)
+    //console.log(validacion.error)
 
     if(!validacion.error){
         const productoGuardado = await productoModel.create(data)
