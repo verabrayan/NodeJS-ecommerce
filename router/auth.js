@@ -1,13 +1,21 @@
 const { Router } = require("express");
+const { required } = require("joi");
+const config = require('../config/index')
 const router = Router();
 const { verifyTokenAdmin } = require("../middlewares/authValidation");
 
 const Auth = require("../services/auth");
 const authService = new Auth();
 
-router.get("/google",authService.authGoogle())
+const Provider =require('../services/passport')
+const providerService = new Provider()
 
-router.get('/google/callback',authService.authGoogleCallback())
+router.get("/google",providerService.authGoogle())
+
+router.get('/google/callback', async (req,res)=>{
+  const result = await providerService.authGoogleCallback(req,res)
+  res.status(result.success?201:400).json(result)
+})
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -25,7 +33,8 @@ router.post("/login", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   const { email, name, password } = req.body;
-  const result = await authService.registro(email, password, name);
+  const rol = config.rol
+  const result = await authService.registro(email, password, name,rol);
   //res.status(200).json()
   return res.status(result.success?201:400).json(result)
 });

@@ -33,15 +33,15 @@ class Auth {
     return { message: "Credenciales incorrectas", success: false };
   }
 
-  async registro(email, password_init, name, provider) {
-    const validacion = await this.usuarios.validateUser({email,password:password_init,name,provider:"email"})
-    if(validacion.success){
+  async registro(email, password_init, name,rol, provider) {
+    const validacion = await this.usuarios.validateUser({ email, password: password_init, name,rol,provider: provider || "email"})
+    if (validacion.success) {
       const password = await this.hashPassword(password_init)
-      const usuario = await this.usuarios.createUsuario({...validacion.data,password})
+      const usuario = await this.usuarios.createUsuario({ ...validacion.data, password })
 
       return usuario
     }
-    return {success:false,...validacion}
+    return { success: false, ...validacion }
   }
 
 
@@ -54,16 +54,7 @@ class Auth {
     return { message: "Ocurrio un error", success: false };
   }
 
-  authGoogle(){
-    return passport.authenticate("google", {
-    scope:['email','profile']})
-  }
-
-  authGoogleCallback(){
-    return passport.authenticate("google",{
-    successRedirect:'/productos',
-    failureRedirect:'/productos'})
-  }
+  
 }
 
 module.exports = Auth;

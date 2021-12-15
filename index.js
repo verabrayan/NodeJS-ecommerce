@@ -2,10 +2,10 @@ const config = require("./config/index");
 const express = require("express");
 const { connection } = require("./config/database");
 const cookie = require("cookie-parser");
-const cors = require('cors');
+const cors = require("cors");
 const passport = require("passport");
 //const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-const session = require('express-session')
+const session = require("express-session");
 
 const productosRouter = require("./router/productos");
 const usuariosRouter = require("./router/usuarios");
@@ -18,21 +18,23 @@ app.set("port", config.port || 4000);
 
 //middlewares
 app.use(express.urlencoded({ extended: false }));
-app.use(cors())
-app.use(cookie())
+app.use(
+  cors({
+    credentials: true,
+    origin: ["http://localhost:5500", "http://127.0.0.1:5500"],
+  })
+);
+app.use(cookie());
 app.use(express.json());
-app.use(session({
-  secret:'12345'
-  //resave:true,
-  //saveUninitialized:true
-}))
-app.use(passport.initialize())
-app.use(passport.session())
-
-
-
-
-
+app.use(
+  session({
+    secret: "12345",
+    //resave:true,
+    //saveUninitialized:true
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 //connection db
 connection().catch((err) => console.log(err));
